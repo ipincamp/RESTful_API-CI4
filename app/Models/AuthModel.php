@@ -4,7 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class LoginModel extends Model
+class AuthModel extends Model
 {
     protected $table            = 'admins';
     protected $primaryKey       = 'id';
@@ -44,9 +44,11 @@ class LoginModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    // Get Data
-    public function getData($username, $password)
+    // Get Data by Username
+    public function loginByUsername(string $username)
     {
-        return $this->where(['username' => $username, 'password' => $password])->first();
+        $data = $this->where(['username' => $username])->first();
+
+        return $data ? $data : false;
     }
 }

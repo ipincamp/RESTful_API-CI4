@@ -31,7 +31,7 @@ class AuthController extends ResourceController
             ]);
         }
 
-        $loginModel = new \App\Models\LoginModel();
+        $loginModel = new \App\Models\AuthModel();
         $user = $loginModel->loginByUsername($inputs->username);
         if (!$user || !password_verify($inputs->password, $user['password'])) {
             return $this->respond([
