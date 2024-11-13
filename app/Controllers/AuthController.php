@@ -6,25 +6,46 @@ use CodeIgniter\RESTful\ResourceController;
 
 class AuthController extends ResourceController
 {
+    protected $request;
+
+    public function __construct()
+    {
+        $this->request = service('request');
+    }
+
+    public function testAPI()
+    {
+        return $this->respond([
+            'status' => 'success',
+            'message' => 'Test API'
+        ]);
+    }
+
     public function login()
     {
-        $username = $this->request->getPost('username');
-        $password = $this->request->getPost('password');
+        $inputs = $this->request->getJSON();
+        if ($inputs == null) {
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'No data provided'
+            ]);
+        }
 
         $loginModel = new \App\Models\LoginModel();
-        $loginSukses = $loginModel->getData($username, $password);
-
-        if ($loginModel) {
-            return $this->respond([
-                'status' => 'success',
-                'message' => 'Login successful',
-                'data' => $loginSukses
-            ]);
-        } else {
+        $user = $loginModel->loginByUsername($inputs->username);
+        if (!$user || !password_verify($inputs->password, $user['password'])) {
             return $this->respond([
                 'status' => 'error',
                 'message' => 'Invalid username or password'
             ]);
         }
+
+        unset($user['password']);
+
+        return $this->respond([
+            'status' => 'success',
+            'message' => 'Login successful',
+            'data' => $user
+        ]);
     }
 }
